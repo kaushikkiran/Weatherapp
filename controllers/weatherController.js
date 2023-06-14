@@ -53,6 +53,7 @@ exports.getPastWeather = async (req, res) => {
         if (!city || city === undefined) {
             city = "Dublin";
         }
+
         //Hardcoding the past date
         let date = "2023-06-05";
 
@@ -81,7 +82,7 @@ exports.getFutureWeather = async (req, res) => {
             city = "Dublin";
         }
         //Hardcoding the future date (Anyday 14days from now upto 300 days)
-        let date = '2023-06-27';
+        let date = '2023-07-15';
 
         //Request for weather data based on city parameter
         let reqURL = 'https://api.weatherapi.com/v1/future.json?key=' + apiKey + '&q=' + city + '&dt=' + date;
@@ -89,11 +90,6 @@ exports.getFutureWeather = async (req, res) => {
         const weatherData = await response.json();
 
         //All Data has been retrieved in only one single unit of measurement (Apply conversion wherever necessary)
-        var data = {
-            location: weatherData.location.name,
-            country: weatherData.location.country,
-            averageTemperature: weatherData.location.avgTemp
-        }
         res.json(weatherData);
     }
     catch (err) {
@@ -109,12 +105,20 @@ exports.getWeatherForcast = async (req, res) => {
     try {
         let city = req.params.city;    // Accept the city parameter from the request
 
-        //Validate the city paramete, Setting the default city to Dublin
+        //Validate the city parameter, Setting the default city to Dublin
         if (!city || city === undefined) {
             city = "Dublin";
         }
-        //Hardcoding the future date (Anyday 14days from now upto 300 days)
+
         let days = req.params.days; // Accept the days parameter from the request
+        //Validate the days parameter, Setting the default
+        if (!days || days === undefined) {
+            days = 6;
+        }
+        else if (days > 10)        //Change the max days to 10 days
+        {
+            days = 10;
+        }
 
         //Request for weather data based on city parameter
         const response = await fetch('https://api.weatherapi.com/v1/forecast.json?key=' + apiKey + '&q=' + city + '&days=' + days + '&aqi=no&alerts=no');
